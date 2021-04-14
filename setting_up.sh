@@ -16,6 +16,8 @@ setup_variables(){
 	HADK_ENV=".hadk.env";
 	MERSDK_PROFILE=".mersdk.profile";
 	MERSDKUBU_PROFILE=".mersdkubu.profile";
+	TARGETS="$PLATFORM_SDK_ROOT/targets"
+	TOOLINGS="$PLATFORM_SDK_ROOT/toolings"
 }
 
 filler(){
@@ -24,6 +26,30 @@ filler(){
 	echo -e "----------------";
 	echo -e "\n";
 
+}
+
+cleanup(){
+
+	read -p "Do you want to clean all files and dir from previous setup (y|Y) or Press any other key to skip:	" -n 1 -r CLEANUP
+	echo -e "\n"
+	
+	if [[ $CLEANUP =~ ^[Yy]$ ]]
+		then
+			for CFILE in $HADK_ENV $MERSDK_PROFILE $MERSDKUBU_PROFILE
+				do
+					echo "Deleting file $CFILE ..."
+					echo -e "\n"
+					rm -f $HOME/$CFILE
+
+				done
+
+			for CDIR in $TARGETS $TOOLINGS $SFOSSDK $UBUNTU_CHROOT $PLATFORM_SDK_ROOT
+				do
+					echo "Deleting dir $CDIR ..."
+					echo -e "\n"
+					sudo rm -rf $CDIR
+				done
+	fi
 }
 
 report_error(){
@@ -47,11 +73,18 @@ setup_dirs(){
 
 	echo "Setting up directories ...";
 
-	for DIR in $SFOSSDK $HADK_DIR $UBUNTU_CHROOT
+	for DIR in $SFOSSDK $HADK_DIR $UBUNTU_CHROOT $TARGETS $TOOLINGS
 		do
 			if [ -d $DIR ]
 				then
 					echo "$DIR already exists";
+					read -p "Do you want to delete $DIR? (y|Y) or press any other key to skip:	" -n 1 -r CONF1;
+					echo -e "\n"
+					if [[ $CONF1 =~ ^[Yy]$ ]]
+						then
+						sudo rm -rf $DIR;
+						sudo mkdir -p $DIR;
+					fi	
 				else
 					echo "$DIR doesn't exists";
 					echo "Making $DIR ...";
@@ -74,7 +107,7 @@ init_host(){
  init_platform_sdk(){
  	
  	echo "export PLATFORM_SDK_ROOT=$PLATFORM_SDK_ROOT" >> ~/.bashrc;
-	echo 'alias sfossdk=$SFOSSDK/mer-sdk-chroot' >> ~/.bashrc ;
+	echo "alias sfossdk=$SFOSSDK/mer-sdk-chroot" >> ~/.bashrc ;
  }
 
 
@@ -102,6 +135,18 @@ init_chroot(){
 			extract_tar $UBU_TARBALL $UBUNTU_CHROOT && echo "$UBUNTU_CHROOT extracted" || report_error "3" "Failed to extract $UBUNTU_CHROOT";
 	fi
 
+	filler
+
+	for TARFILE in $JOLLA_SDK $UBU_TARBALL
+		do
+			read -p "Do you want to delete downloaded $TARFILE? (y|Y) or Press any other key skip:	" -n 1 -r CONF2
+			echo -e "\n"
+			if [[ $CONF2 =~ ^[Yy]$ ]]
+				then
+					rm -rf $TARFILE
+			fi
+		done
+
 }
 
 init_hadk_env(){
@@ -109,7 +154,7 @@ init_hadk_env(){
 	for ENV_FILE in $HADK_ENV $MERSDK_PROFILE $MERSDKUBU_PROFILE
 		do
 			echo "copying $ENV_FILE to $HOME";
-			cp $ENV_FILE $HOME/$ENV_FILE;
+			cp -i $ENV_FILE $HOME/$ENV_FILE;
 		done
 
 	echo "Updating env and profiles";
@@ -123,6 +168,8 @@ init_hadk_env(){
 welcome
 filler
 setup_variables
+cleanup
+filler
 setup_dirs
 filler
 init_host
