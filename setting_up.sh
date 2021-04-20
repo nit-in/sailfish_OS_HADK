@@ -131,7 +131,7 @@ init_chroot(){
 			echo "$UBU_TARBALL already exists";
 			extract_tar $UBU_TARBALL $UBUNTU_CHROOT && echo "$UBUNTU_CHROOT extracted" || report_error "3" "Failed to extract $UBUNTU_CHROOT";
 		else
-			wget -c https://releases.sailfishos.org/ubu/$TARBALL;
+			wget -c https://releases.sailfishos.org/ubu/$UBU_TARBALL;
 			extract_tar $UBU_TARBALL $UBUNTU_CHROOT && echo "$UBUNTU_CHROOT extracted" || report_error "3" "Failed to extract $UBUNTU_CHROOT";
 	fi
 
