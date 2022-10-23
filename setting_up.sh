@@ -120,7 +120,7 @@ init_chroot(){
 		   extract_tar $JOLLA_SDK $SFOSSDK && echo "$JOLLA_SDK extracted" || report_error "2" "Failed to extract SFOS Platform SDK";
 		else
 		   echo "$JOLLA_SDK does not exist";
-		   wget -c http://releases.sailfishos.org/sdk/installers/latest/$JOLLA_SDK ;
+		   wget -q -c http://releases.sailfishos.org/sdk/installers/latest/$JOLLA_SDK ;
 		   extract_tar $JOLLA_SDK $SFOSSDK && echo "$JOLLA_SDK extracted" || report_error "2" "Failed to extract SFOS Platform SDK";
 	fi
 
@@ -131,7 +131,7 @@ init_chroot(){
 			echo "$UBU_TARBALL already exists";
 			extract_tar $UBU_TARBALL $UBUNTU_CHROOT && echo "$UBUNTU_CHROOT extracted" || report_error "3" "Failed to extract $UBUNTU_CHROOT";
 		else
-			wget -c https://releases.sailfishos.org/ubu/$UBU_TARBALL;
+			wget -q -c https://releases.sailfishos.org/ubu/$UBU_TARBALL;
 			extract_tar $UBU_TARBALL $UBUNTU_CHROOT && echo "$UBUNTU_CHROOT extracted" || report_error "3" "Failed to extract $UBUNTU_CHROOT";
 	fi
 
